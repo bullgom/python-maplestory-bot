@@ -1,38 +1,28 @@
 #!/usr/bin/env python3
 
-from key import *
-
 import serial
 
-PRESS_COMMAND = 0
-RELEASE_COMMAND = 1
-RELEASE_ALL_COMMAND = 2
+KEY_PRESS = 0
+KEY_RELEASE = 1
+KEY_RELEASE_ALL = 2
 
 class Keyboard:
-    def __init__(self, serial_location, baudrate=9600):
-        self.serial = serial.Serial(serial_location,
-                                    baudrate)
+    def __init__(self, sio):
+        self.sio = sio
                             
-    def _send_command(self, command, key):
-        self.serial.write(bytearray([command, key]))
-        self.serial.flush()
+    def _send(self, command, key):
+        self.sio.write(bytearray([command, key]))
+        self.sio.flush()
                             
     def press(self, key):
-        self._send_command(PRESS_COMMAND, key)
+        self._send(KEY_PRESS, key)
         
     def release(self, key):
-        self._send_command(RELEASE_COMMAND, key)
+        self._send(KEY_RELEASE, key)
         
     def releaseAll(self):
-        self._send_command(RELEASE_ALL_COMMAND, 0)
+        self._send(KEY_RELEASE_ALL, 0)
 
-def main():
-    kb = Keyboard('COM9')
-    import time
-    time.sleep(2)
-    kb.press(KEY_LEFT_CTRL)
-    kb.press(ord('c'))
-    kb.releaseAll()
-
-if __name__ == '__main__':
-    main()
+    def type(self, key):
+        self.press(key)
+        self.release(key)
